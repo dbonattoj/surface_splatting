@@ -46,6 +46,9 @@ void set_vertex_normals_from_triangle_mesh(std::vector<Eigen::Vector3f>
 std::string get_gl_error_string(GLenum gl_error);
 std::string get_gl_framebuffer_status_string(GLenum framebuffer_status);
 
+#define gl_check() gl_check_(__FILE__, __func__, __LINE__)
+void gl_check_(std::string dbg_file, std::string dbg_func, int dbg_line);
+
 }
 
 #endif // UTILITY_HPP

@@ -222,4 +222,16 @@ get_gl_framebuffer_status_string(GLenum framebuffer_status)
     return status_string;
 }
 
+void
+gl_check_(std::string dbg_file, std::string dbg_func, int dbg_line)
+{
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        std::cout
+            << "OpenGL: " << get_gl_error_string(err) << "! ("
+            << dbg_file << ":" << dbg_func << ":" << dbg_line << ":"
+            << ")" << std::endl;
+    }
+}
+
 }
