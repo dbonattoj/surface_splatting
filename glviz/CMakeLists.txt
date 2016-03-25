@@ -1,89 +1,29 @@
-include(shader_wrap_cpp)
+# Module
+set(GLVIZ_NAME glviz)
 
-# GLviz shader.
-file(GLOB OPENGL_SHADERS src/shader/*)
-shader_wrap_cpp(SOURCES_OPENGL_SHADERS "${OPENGL_SHADERS}")
+# Sources
+file(GLOB_RECURSE GLVIZ_SOURCES RELATIVE ${GLVIZ_ROOT} *.cpp)
+file(GLOB_RECURSE GLVIZ_HEADERS RELATIVE ${GLVIZ_ROOT} *.hpp)
+file(GLOB_RECURSE GLVIZ_SHADERS RELATIVE ${GLVIZ_ROOT} *.glsl)
 
-source_group("Shader Files" FILES ${OPENGL_SHADERS})
-
-add_library(shader
-    ${SOURCES_OPENGL_SHADERS}
-    ${OPENGL_SHADERS}
-)
-
-add_dependencies(shader
-    embed_resource
-)
-
-# GLviz.
-set(SOURCES
-    src/glviz.cpp
-    src/camera.cpp
-    src/shader.cpp
-    src/trackball.cpp
-    src/program.cpp
-    src/buffer.cpp
-    src/utility.cpp
-)
-
-set(HEADERS
-    src/glviz.hpp
-    src/camera.hpp
-    src/shader.hpp
-    src/trackball.hpp
-    src/program.hpp
-    src/buffer.hpp
-    src/utility.hpp
-)
-
-# Use static anttweakbar.
-add_definitions(-DTW_NO_LIB_PRAGMA -DTW_STATIC)
-
-# Use static GLEW.
-add_definitions(-DGLEW_STATIC)
-
-# Disable stupid MSVC warnings.
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
-endif()
-
-add_library(glviz
-    ${SOURCES}
-    ${HEADERS}
-)
-
+# Includes
 include_directories(
-    include
-    ${eigen_INCLUDE_DIRS}
-    ${anttweakbar_INCLUDE_DIRS}
-    ${sdl_INCLUDE_DIRS}
-    ${glew_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${GLVIZ_INCLUDE_DIR}
+    ${GLVIZ_SOURCE_DIR}
 )
 
-add_dependencies(glviz
-    shader
-    anttweakbar
-    SDL2main
-    SDL2-static
-    glew
-)
+# Shaders
+set(GLVIZ_RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/glviz_resources.hpp" "${CMAKE_CURRENT_BINARY_DIR}/glviz_resources.cpp")
+wrap_resources("${GLVIZ_SHADERS}" ${GLVIZ_NAME} ${GLVIZ_RESOURCES})
 
-find_package(OpenGL REQUIRED)
+# Target
+add_library(${GLVIZ_NAME} STATIC ${GLVIZ_SOURCES} ${GLVIZ_HEADERS} ${GLVIZ_SHADERS} ${GLVIZ_RESOURCES})
+set_property(TARGET ${GLVIZ_NAME} PROPERTY CXX_STANDARD 11)
 
-set(glviz_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${eigen_INCLUDE_DIRS}
-    ${anttweakbar_INCLUDE_DIRS}
-    ${sdl_INCLUDE_DIRS}
-    ${glew_INCLUDE_DIRS}
-    ${OPENGL_INCLUDE_DIRS}
-    CACHE INTERNAL "glviz include directory")
-
-set(glviz_LIBRARIES
-    glviz
-    shader
-    ${anttweakbar_LIBRARIES}
-    ${sdl_LIBRARIES}
-    ${glew_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-    CACHE INTERNAL "glviz library")
+# Libraries
+ANTTWEAKBAR_LINK(${GLVIZ_NAME})
+EIGEN3_LINK(${GLVIZ_NAME})
+GLEW_LINK(${GLVIZ_NAME})
+OPENGL_LINK(${GLVIZ_NAME})
+SDL2_LINK(${GLVIZ_NAME})

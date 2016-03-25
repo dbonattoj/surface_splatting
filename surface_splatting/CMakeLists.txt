@@ -1,41 +1,34 @@
-# Use static anttweakbar.
-add_definitions(-DTW_NO_LIB_PRAGMA -DTW_STATIC)
+# Module
+set(SURFACE_SPLATTING_NAME surface_splatting)
 
-# Use static GLEW.
-add_definitions(-DGLEW_STATIC)
+# Directories
+set(SURFACE_SPLATTING_SOURCE_DIR "${SURFACE_SPLATTING_ROOT}")
 
-# Use static freeglut.
-add_definitions(-DFREEGLUT_LIB_PRAGMAS=0 -DFREEGLUT_STATIC)
+# Sources
+file(GLOB_RECURSE SURFACE_SPLATTING_SOURCES RELATIVE ${SURFACE_SPLATTING_SOURCE_DIR} *.cpp)
+file(GLOB_RECURSE SURFACE_SPLATTING_HEADERS RELATIVE ${SURFACE_SPLATTING_SOURCE_DIR} *.hpp)
+file(GLOB_RECURSE SURFACE_SPLATTING_SHADERS RELATIVE ${SURFACE_SPLATTING_SOURCE_DIR} *.glsl)
 
-file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}/resources/" GLVIZ_RESOURCES_DIR)
-configure_file(config.hpp.in "${CMAKE_CURRENT_BINARY_DIR}/config.hpp")
-
-file(GLOB OPENGL_SHADERS shader/*)
-shader_wrap_cpp(SOURCES_OPENGL_SHADERS "${OPENGL_SHADERS}")
-
-add_executable(surface_splatting
-    main.cpp
-    framebuffer.hpp
-    framebuffer.cpp
-    program_finalization.hpp
-    program_finalization.cpp
-    program_attribute.hpp
-    program_attribute.cpp
-    splat_renderer.cpp
-    splat_renderer.hpp
-    ${OPENGL_SHADERS}
-    ${SOURCES_OPENGL_SHADERS}
-)
-
+# Includes
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${glviz_INCLUDE_DIRS}
+    ${GLVIZ_INCLUDE_DIR}
+    ${GLVIZ_SOURCE_DIR}
 )
 
-add_dependencies(surface_splatting
-    glviz
-)
+# Shaders
+set(SURFACE_SPLATTING_RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/surface_splatting_resources.hpp" "${CMAKE_CURRENT_BINARY_DIR}/surface_splatting_resources.cpp")
+wrap_resources("${SURFACE_SPLATTING_SHADERS}" ${SURFACE_SPLATTING_NAME} ${SURFACE_SPLATTING_RESOURCES})
 
-target_link_libraries(surface_splatting
-    ${glviz_LIBRARIES}
-)
+# Target
+add_executable(${SURFACE_SPLATTING_NAME} ${SURFACE_SPLATTING_SOURCES} ${SURFACE_SPLATTING_HEADERS} ${SURFACE_SPLATTING_SHADERS} ${SURFACE_SPLATTING_RESOURCES})
+set_property(TARGET ${SURFACE_SPLATTING_NAME} PROPERTY CXX_STANDARD 11)
+add_dependencies(${SURFACE_SPLATTING_NAME} glviz)
+target_link_libraries(${SURFACE_SPLATTING_NAME} glviz)
+
+# Libraries
+ANTTWEAKBAR_LINK(${SURFACE_SPLATTING_NAME})
+EIGEN3_LINK(${SURFACE_SPLATTING_NAME})
+GLEW_LINK(${SURFACE_SPLATTING_NAME})
+OPENGL_LINK(${SURFACE_SPLATTING_NAME})
+SDL2_LINK(${SURFACE_SPLATTING_NAME})

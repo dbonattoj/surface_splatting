@@ -1,25 +1,31 @@
-cmake_minimum_required(VERSION 3.0)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+# CMake
+cmake_minimum_required(VERSION 3.1)
 
-project(glviz)
+# Paths
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules")
+set(GLVIZ_ROOT "${CMAKE_SOURCE_DIR}/glviz")
+set(GLVIZ_INCLUDE_DIR "${GLVIZ_ROOT}/include")
+set(GLVIZ_SOURCE_DIR "${GLVIZ_ROOT}/src")
+set(SURFACE_SPLATTING_ROOT "${CMAKE_SOURCE_DIR}/surface_splatting")
 
-# Visual studio solution directories.
-set_property(GLOBAL PROPERTY USE_FOLDERS on)
+# Project
+project(surface_splatting)
 
-# Enable simultaneous compilation of source files for MSVC.
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-endif()
+# Tools
+include(tools-compilers)
+include(tools-resources)
 
-# Enable C++11 support for GNU g++.
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-endif()
+# Libraries
+include(libs-anttweakbar)
+include(libs-eigen3)
+include(libs-glew)
+include(libs-opengl)
+include(libs-sdl2)
 
-# Put all executables and libraries into a common directory.
+# Put all executables and libraries into a common directory
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
 set(LIBRARY_OUTPUT_PATH    "${PROJECT_BINARY_DIR}/bin")
 
-add_subdirectory(extern)
+# Source
 add_subdirectory(glviz)
 add_subdirectory(surface_splatting)
