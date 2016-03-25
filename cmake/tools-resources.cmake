@@ -11,11 +11,12 @@ function(wrap_resources resources prefix output_hpp output_cpp)
         string(REGEX REPLACE "\\.| |-" "_" filename ${filename})
 
         # Header
-        file(APPEND ${output_cpp} "extern const unsigned char ${filename}[];\n")
+        file(APPEND ${output_hpp} "extern const unsigned char ${filename}[];\n")
 
         # Source
         file(READ ${resource} filedata HEX)
         string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1," filedata ${filedata})
+        file(APPEND ${output_cpp} "extern const unsigned char ${filename}[];\n")
         file(APPEND ${output_cpp} "const unsigned char ${filename}[] = { ${filedata} 0 };\n")
     endforeach()
 endfunction()
