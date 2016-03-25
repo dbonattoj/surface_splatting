@@ -1,25 +1,23 @@
 // This file is part of Surface Splatting.
 //
 // Copyright (C) 2010, 2015 by Sebastian Lipponer.
-// 
+//
 // Surface Splatting is free software: you can redistribute it and / or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Surface Splatting is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Surface Splatting. If not, see <http://www.gnu.org/licenses/>.
 
 #include <GLviz>
 
 #include "splat_renderer.hpp"
-
-#include "config.hpp"
 
 #include <Eigen/Core>
 
@@ -81,19 +79,11 @@ load_triangle_mesh(std::string const& filename)
     std::cout << "\nRead " << filename << "." << std::endl;
     std::ifstream input(filename);
 
-    if (input.good())
-    {
+    if (input.good()) {
         input.close();
         GLviz::load_raw(filename, m_vertices, m_faces);
-    }
-    else
-    {
-        input.close();
-
-        std::ostringstream fqfn;
-        fqfn << path_resources;
-        fqfn << filename;
-        GLviz::load_raw(fqfn.str(), m_vertices, m_faces);
+    } else {
+        throw std::runtime_error(std::string("Could not open mesh file! path = ") + filename);
     }
 
     std::cout << "  #vertices " << m_vertices.size() << std::endl;
@@ -258,11 +248,11 @@ load_cube()
     cube[1]   = cube[0];
     cube[1].c = Vector3f(0.5f, 0.0f, 0.5f);
     cube[1].p = Vector3f(-1.0f, 0.0f, 0.0f);
-    
+
     cube[2]   = cube[0];
     cube[2].c = Vector3f(0.0f, 0.5f, 0.5f);
     cube[2].p = Vector3f(0.0f, -1.0f, 0.0f);
-    
+
     cube[3]   = cube[0];
     cube[3].c = Vector3f(0.0f, -0.5f, 0.5f);
     cube[3].p = Vector3f(0.0f, 1.0f, 0.0f);
@@ -450,7 +440,7 @@ void
 set_model(void const* value, void* data)
 {
     g_model = *static_cast<unsigned int const*>(value);
-    
+
     switch (g_model)
     {
         case 1:
@@ -539,16 +529,17 @@ int
 main(int argc, char* argv[])
 {
     GLviz::init(argc, argv);
-  
+
     camera.translate(Eigen::Vector3f(0.0f, 0.0f, -2.0f));
     viz = std::unique_ptr<SplatRenderer>(new SplatRenderer(camera));
 
-    try
-    {
-        load_triangle_mesh("stanford_dragon_v40k_f80k.raw");
-    }
-    catch(std::runtime_error const& e)
-    {
+    std::string filename = "stanford_dragon_v40k_f80k.raw";
+    if (argc > 1)
+        filename = argv[1];
+
+    try {
+        load_triangle_mesh(filename);
+    } catch(std::runtime_error const& e) {
         std::cerr << e.what() << std::endl;
         std::exit(EXIT_FAILURE);
     }
