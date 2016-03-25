@@ -26,7 +26,7 @@
 #include "camera.hpp"
 
 #include <GL/glew.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <AntTweakBar.h>
 
 #include <iostream>
@@ -305,7 +305,7 @@ init(int argc, char* argv[])
     {
         glewExperimental = GL_TRUE;
         GLenum glew_error = glewInit();
-        
+
         if (GLEW_OK != glew_error)
         {
             std::cerr << "Failed to initialize GLEW:" << std::endl;
@@ -330,7 +330,7 @@ init(int argc, char* argv[])
 
     // Initialize AntTweakBar.
     {
-        int tw_init_ok = TwInit(TW_OPENGL_CORE, NULL);
+        int tw_init_ok = TwInit(TW_OPENGL, NULL); // TW_OPENGL_CORE
 
         if (!tw_init_ok)
         {
