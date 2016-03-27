@@ -1,17 +1,17 @@
 // This file is part of Surface Splatting.
 //
 // Copyright (C) 2010, 2015 by Sebastian Lipponer.
-// 
+//
 // Surface Splatting is free software: you can redistribute it and / or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Surface Splatting is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Surface Splatting. If not, see <http://www.gnu.org/licenses/>.
 
@@ -117,7 +117,7 @@ ProgramAttribute::initialize_program_obj()
         attach_shader(m_lighting_vs_obj);
 
         std::map<std::string, int> defines;
-        
+
         defines.insert(std::make_pair("EWA_FILTER",
             m_ewa_filter ? 1 : 0));
         defines.insert(std::make_pair("POINTSIZE_METHOD",
@@ -162,7 +162,6 @@ ProgramAttribute::initialize_program_obj()
     }
     catch (uniform_not_found_error const& e)
     {
-        std::cerr << "Warning: Failed to set a uniform variable." << std::endl
-            << e.what() << std::endl;
+        std::cerr << "[program_attribute] Uniform error! name = " << e.what() << std::endl;
     }
 }

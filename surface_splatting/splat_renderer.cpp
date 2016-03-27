@@ -1,17 +1,17 @@
 // This file is part of Surface Splatting.
 //
 // Copyright (C) 2010, 2015 by Sebastian Lipponer.
-// 
+//
 // Surface Splatting is free software: you can redistribute it and / or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Surface Splatting is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Surface Splatting. If not, see <http://www.gnu.org/licenses/>.
 
@@ -82,11 +82,13 @@ UniformBufferParameter::set_buffer_data(Vector3f const& color, float shininess,
 
 
 SplatRenderer::SplatRenderer(GLviz::Camera const& camera)
-    : m_camera(camera), m_soft_zbuffer(true), m_smooth(false),
+    : m_camera(camera),
+      m_soft_zbuffer(true), m_backface_culling(false), m_smooth(false),
       m_color_material(true), m_ewa_filter(false), m_multisample(false),
-      m_pointsize_method(0), m_backface_culling(false),
-      m_color(Vector3f(0.0, 0.25f, 1.0f)), m_epsilon(5.0f * 1e-3f),
-      m_shininess(8.0f), m_radius_scale(1.0f), m_ewa_radius(1.0f)
+      m_pointsize_method(2),
+      m_color(Vector3f(0.0, 0.25f, 1.0f)),
+      m_epsilon(5.0f * 1e-3f), m_shininess(8.0f), m_radius_scale(1.0f),
+      m_ewa_radius(1.0f)
 {
     m_uniform_camera.bind_buffer_base(0);
     m_uniform_raycast.bind_buffer_base(1);
@@ -224,7 +226,7 @@ SplatRenderer::setup_vertex_array_buffer_object()
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE,
         sizeof(Surfel), reinterpret_cast<const GLfloat*>(36));
-    
+
     // Color rgba.
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE, GL_TRUE,
@@ -437,11 +439,11 @@ void
 SplatRenderer::setup_uniforms(glProgram& program)
 {
     m_uniform_camera.set_buffer_data(m_camera);
-    
+
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
-    GLviz::Frustum view_frustum = m_camera.get_frustum();
-        
+    //GLviz::Frustum view_frustum = m_camera.get_frustum();
+
     m_uniform_raycast.set_buffer_data(
         m_camera.get_projection_matrix().inverse(),
         viewport);
@@ -454,7 +456,7 @@ SplatRenderer::setup_uniforms(glProgram& program)
         frustum_plane[i] = projection_matrix.row(3) + (-1.0f + 2.0f
             * static_cast<float>(i % 2)) * projection_matrix.row(i / 2);
     }
-    
+
     for (unsigned int i(0); i < 6; ++i)
     {
         frustum_plane[i] = (1.0f / frustum_plane[i].block<3, 1>(
@@ -470,7 +472,7 @@ SplatRenderer::setup_uniforms(glProgram& program)
 
 void
 SplatRenderer::render_pass(bool depth_only)
-{ 
+{
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -528,7 +530,7 @@ SplatRenderer::begin_frame()
 
     glDepthMask(GL_TRUE);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    
+
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glClearDepth(1.0);
 
@@ -570,7 +572,7 @@ SplatRenderer::end_frame()
     }
 
     m_finalization.use();
-    
+
     try
     {
         setup_uniforms(m_finalization);
@@ -584,8 +586,7 @@ SplatRenderer::end_frame()
     }
     catch (uniform_not_found_error const& e)
     {
-        std::cerr << "Warning: Failed to set a uniform variable." << std::endl
-            << e.what() << std::endl;
+        std::cerr << "[splat_renderer] Uniform error! m_finalization, name = " << e.what() << std::endl;
     }
 
     glBindVertexArray(m_rect_vao);
