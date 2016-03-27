@@ -25,8 +25,6 @@
 
 #include "camera.hpp"
 
-#include <AntTweakBar.h>
-
 namespace GLviz
 {
 

@@ -16,7 +16,6 @@ include(tools-compilers)
 include(tools-resources)
 
 # Libraries
-include(libs-anttweakbar)
 include(libs-eigen3)
 include(libs-glew)
 include(libs-opengl)
