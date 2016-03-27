@@ -35,7 +35,6 @@ namespace
 {
 
 GLviz::Camera camera;
-unsigned int g_model(1);
 std::unique_ptr<SplatRenderer> viz;
 
 std::vector<Eigen::Vector3f>               m_ref_vertices;
@@ -430,99 +429,6 @@ load_dragon()
     }
 }
 
-void
-get_model(void* value, void* data)
-{
-    *static_cast<unsigned int*>(value) = g_model;
-}
-
-void
-set_model(void const* value, void* data)
-{
-    g_model = *static_cast<unsigned int const*>(value);
-
-    switch (g_model)
-    {
-        case 1:
-            load_plane(200);
-            break;
-        case 2:
-            load_cube();
-            break;
-        default:
-            load_dragon();
-    }
-}
-
-void
-set_soft_zbuffer(void const* value, void* data)
-{
-    viz->set_soft_zbuffer(*static_cast<bool const*>(value));
-
-    if (viz->soft_zbuffer())
-        TwDefine(" TweakBar/'EWA filter' readonly=false ");
-    else
-        TwDefine(" TweakBar/'EWA filter' readonly=true ");
-}
-void get_soft_zbuffer(void* value, void* data)
-{ *static_cast<bool*>(value) = viz->soft_zbuffer(); }
-
-void set_soft_zbuffer_epsilon(void const* value, void* data)
-{ viz->set_soft_zbuffer_epsilon(*static_cast<float const*>(value)); }
-void get_soft_zbuffer_epsilon(void* value, void* data)
-{ *static_cast<float*>(value) = viz->soft_zbuffer_epsilon(); }
-
-void get_pointsize_method(void* value, void* data)
-{ *static_cast<unsigned int*>(value) = viz->pointsize_method(); }
-void set_pointsize_method(void const* value, void* data)
-{ viz->set_pointsize_method(*static_cast<unsigned int const*>(value)); }
-
-void set_ewa_filter(void const* enable, void* data)
-{ viz->set_ewa_filter(*static_cast<bool const*>(enable)); }
-void get_ewa_filter(void* value, void* data)
-{ *static_cast<bool*>(value) = viz->ewa_filter(); }
-
-void set_ewa_radius(void const* value, void* data)
-{ viz->set_ewa_radius(*static_cast<float const*>(value)); }
-void get_ewa_radius(void* value, void* data)
-{ *static_cast<float*>(value) = viz->ewa_radius(); }
-
-void set_multisample(void const* enable, void* data)
-{ viz->set_multisample(*static_cast<bool const*>(enable)); }
-void get_multisample(void* value, void* data)
-{ *static_cast<bool*>(value) = viz->multisample(); }
-
-void set_backface_culling(void const* enable, void* data)
-{ viz->set_backface_culling(*static_cast<bool const*>(enable)); }
-void get_backface_culling(void* value, void* data)
-{ *static_cast<bool*>(value) = viz->backface_culling(); }
-
-void get_smooth(void* value, void* data)
-{ *static_cast<bool*>(value) = viz->smooth(); }
-void set_smooth(void const* value, void* data)
-{ viz->set_smooth(*static_cast<bool const*>(value)); }
-
-void get_color_material(void* value, void* data)
-{ *static_cast<unsigned int*>(value) = viz->color_material() ? 1 : 0; }
-void set_color_material(void const* value, void* data)
-{ viz->set_color_material(*static_cast<unsigned int const*>(value) == 1); }
-
-void get_material_color(void* value, void* data)
-{ Map<Vector3f> color(static_cast<float*>(value));
-  color = Map<const Vector3f>(viz->material_color()); }
-void set_material_color(void const* value, void* data)
-{ viz->set_material_color(static_cast<float const*>(value)); }
-
-void get_material_shininess(void* value, void* data)
-{ *static_cast<float*>(value) = viz->material_shininess(); }
-void set_material_shininess(void const* value, void* data)
-{ viz->set_material_shininess(*static_cast<float const*>(value)); }
-
-void get_radius_scale(void* value, void* data)
-{ *static_cast<float*>(value) = viz->radius_scale(); }
-void set_radius_scale(void const* value, void* data)
-{ viz->set_radius_scale(*static_cast<float const*>(value)); }
-
 }
 
 int
@@ -544,82 +450,9 @@ main(int argc, char* argv[])
         std::exit(EXIT_FAILURE);
     }
 
-    set_model(&g_model, nullptr);
-
-    // Setup AntTweakBar.
-    {
-        TwBar* bar = GLviz::twbar();
-
-        TwType models = TwDefineEnumFromString("models",
-            "Dragon,Plane,Cube");
-        TwAddVarCB(bar, "Model", models, &set_model,
-            &get_model, nullptr, " group=Scene ");
-
-        TwAddSeparator(bar, nullptr, " group=Scene ");
-
-        TwType shading_type = TwDefineEnumFromString("shading_type",
-            "Flat,Phong");
-        TwAddVarCB(bar, "Shading", shading_type, &set_smooth,
-            &get_smooth, nullptr, " key=5 group='Surface Splatting' ");
-
-        TwAddSeparator(bar, nullptr, " group='Surface Splatting' ");
-
-        TwType color_src = TwDefineEnumFromString("color_src",
-            "Surfel,Material");
-        TwAddVarCB(bar, "Color", color_src, &set_color_material,
-            &get_color_material, nullptr,
-            " key='c' group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "Material Color", TW_TYPE_COLOR3F,
-            &set_material_color, &get_material_color, nullptr,
-            " help='Material Color' group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "Material Shininess", TW_TYPE_FLOAT,
-            &set_material_shininess, &get_material_shininess, nullptr,
-            " min=1e-12 max=1000 help='Material Shininess' \
-            group='Surface Splatting' ");
-
-        TwAddSeparator(bar, nullptr, " group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "Soft z-buffer", TW_TYPE_BOOLCPP,
-            &set_soft_zbuffer, &get_soft_zbuffer, nullptr,
-            " key=z group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "EWA filter", TW_TYPE_BOOLCPP,
-            &set_ewa_filter, &get_ewa_filter, nullptr,
-            " key=u help='EWA filter' group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "EWA radius", TW_TYPE_FLOAT,
-            &set_ewa_radius, &get_ewa_radius, nullptr,
-            " min=0.1 max=4.0 step=1e-3 group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "Soft z-buffer epsilon", TW_TYPE_FLOAT,
-            &set_soft_zbuffer_epsilon, &get_soft_zbuffer_epsilon, nullptr,
-            " min=0 max=1.0 step=1e-6 group='Surface Splatting' ");
-
-        TwType point_size = TwDefineEnumFromString("Point size",
-            "PBP,BHZK05,WHA+07,ZRB+04");
-        TwAddVarCB(bar, "Point size", point_size, &set_pointsize_method,
-            &get_pointsize_method, nullptr,
-            " key='t' group='Surface Splatting' ");
-
-        TwAddSeparator(bar, NULL, " group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "Multisample 4x", TW_TYPE_BOOLCPP,
-            &set_multisample, &get_multisample, nullptr,
-            " help='Multisample 4x' group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "Backface culling", TW_TYPE_BOOLCPP,
-            &set_backface_culling, &get_backface_culling, nullptr,
-            " group='Surface Splatting' ");
-
-        TwAddVarCB(bar, "Radius scale", TW_TYPE_FLOAT,
-            &set_radius_scale, &get_radius_scale, nullptr,
-            " min=1e-6 max=2.0 step=1e-3 group='Surface Splatting' ");
-    }
-
-    TwDefine(" TweakBar size='300 400' valueswidth='100' \
-        color='100 100 100' refresh=0.01 ");
+    //load_plane(200);
+    //load_cube();
+    load_dragon();
 
     GLviz::display_callback(displayFunc);
     GLviz::reshape_callback(reshapeFunc);

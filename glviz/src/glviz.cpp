@@ -27,7 +27,6 @@
 
 #include <GL/glew.h>
 #include <SDL.h>
-#include <AntTweakBar.h>
 
 #include <iostream>
 #include <cstdlib>
@@ -51,7 +50,6 @@ std::function<void (unsigned int)>          m_timer_callback;
 std::function<void(int width, int height)>  m_reshape_callback;
 std::function<void ()>                      m_close_callback;
 
-TwBar*   m_bar;
 Camera*  m_camera;
 
 void
@@ -60,12 +58,9 @@ reshapeFunc(int width, int height)
     m_screen_width  = width;
     m_screen_height = height;
 
-    if (m_reshape_callback)
-    {
+    if (m_reshape_callback) {
         m_reshape_callback(width, height);
     }
-
-    TwWindowSize(m_screen_width, m_screen_height);
 }
 
 void
@@ -122,9 +117,6 @@ process_events()
 
     while (SDL_PollEvent(&event))
     {
-        if (TwEventSDL(&event, SDL_MAJOR_VERSION, SDL_MINOR_VERSION))
-            continue;
-
         switch (event.type)
         {
             case SDL_KEYDOWN:
@@ -180,12 +172,6 @@ void
 set_camera(Camera& camera)
 {
     m_camera = &camera;
-}
-
-TwBar*
-twbar()
-{
-    return m_bar;
 }
 
 void
@@ -327,24 +313,6 @@ init(int argc, char* argv[])
     // Print GLEW version.
     cout_glew_version();
     std::cout << std::endl;
-
-    // Initialize AntTweakBar.
-    {
-        int tw_init_ok = TwInit(TW_OPENGL, NULL); // TW_OPENGL_CORE
-
-        if (!tw_init_ok)
-        {
-            std::cerr << TwGetLastError() << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-        m_bar = TwNewBar("TweakBar");
-        TwWindowSize(m_screen_width, m_screen_height);
-
-        TwDefine(" GLOBAL help='some useful text' ");
-        TwDefine(" TweakBar size='275 400' color='100 100 100' \
-            refresh=0.01 ");
-    }
 }
 
 int
@@ -374,13 +342,10 @@ exec(Camera& camera)
             m_display_callback();
         }
 
-        TwDraw();
         SDL_GL_SwapWindow(m_sdl_window);
     }
 
-    TwTerminate();
-    if (m_close_callback)
-    {
+    if (m_close_callback) {
         m_close_callback();
     }
 

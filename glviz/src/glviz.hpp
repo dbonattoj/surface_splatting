@@ -33,8 +33,6 @@ namespace GLviz
 int      screen_width();
 int      screen_height();
 
-TwBar*   twbar();
-
 Camera*  camera();
 void     set_camera(Camera& camera);
 
