@@ -80,7 +80,7 @@ public:
     SplatRenderer(GLviz::Camera const& camera);
     virtual ~SplatRenderer();
 
-    void render_frame(std::vector<Surfel> const& visible_geometry);
+    GLuint render_frame(std::vector<Surfel> const& visible_geometry);
 
     bool smooth() const;
     void set_smooth(bool enable = true);

@@ -664,7 +664,7 @@ SplatRenderer::end_frame()
     glBindVertexArray(0);
 }
 
-void
+GLuint
 SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry)
 {
     begin_frame();
@@ -710,4 +710,6 @@ SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry)
             << GLviz::get_gl_error_string(gl_error) << std::endl;
     }
 #endif
+
+	return m_fbo.color_texture();
 }
