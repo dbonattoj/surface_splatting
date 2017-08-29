@@ -22,7 +22,7 @@
 
 #include "camera.hpp"
 
-#include <cmath>
+#define M_PI 3.14159265359
 
 using namespace Eigen;
 
