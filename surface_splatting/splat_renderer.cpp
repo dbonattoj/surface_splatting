@@ -19,6 +19,7 @@
 
 #include <GLviz>
 
+
 #include <iostream>
 #include <cmath>
 
@@ -435,6 +436,11 @@ SplatRenderer::reshape(int width, int height)
     m_fbo.reshape(width, height);
 }
 
+void SplatRenderer::computerPrincipalDirections(float const * vertex1_ptr, float const * vertex2_ptr, float const * vertex3_ptr, float * ellipsis_center_ptr, float * ellipsis_principal_direction_1_ptr, float * ellipsis_principal_direction_2_ptr)
+{
+	steiner_circumellipse(vertex1_ptr, vertex2_ptr, vertex3_ptr, ellipsis_center_ptr, ellipsis_principal_direction_1_ptr, ellipsis_principal_direction_2_ptr);
+}
+
 void
 SplatRenderer::setup_uniforms(glProgram& program)
 {
@@ -521,6 +527,70 @@ SplatRenderer::render_pass(bool depth_only)
     glDisable(GL_PROGRAM_POINT_SIZE);
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
+}
+
+void
+SplatRenderer::steiner_circumellipse(float const* v0_ptr, float const* v1_ptr,
+	float const* v2_ptr, float* p0_ptr, float* t1_ptr, float* t2_ptr)
+{
+	Matrix2f Q;
+	Vector3f d0, d1, d2;
+	{
+		const Vector3f v0 = Map<const Vector3f>(v0_ptr);
+		const Vector3f v1 = Map<const Vector3f>(v0_ptr);
+		const Vector3f v2 = Map<const Vector3f>(v0_ptr);
+
+		const Vector3f v[3] = { v0, v1, v2 };
+
+		d0 = v[1] - v[0];
+		d0.normalize();
+
+		d1 = v[2] - v[0];
+		d1 = d1 - d0 * d0.dot(d1);
+		d1.normalize();
+
+		d2 = (1.0f / 3.0f) * (v[0] + v[1] + v[2]);
+
+		Vector2f p[3];
+		for (unsigned int j(0); j < 3; ++j)
+		{
+			p[j] = Vector2f(
+				d0.dot(v[j] - d2),
+				d1.dot(v[j] - d2)
+			);
+		}
+
+		Matrix3f A;
+		for (unsigned int j(0); j < 3; ++j)
+		{
+			A.row(j) = Vector3f(
+				p[j].x() * p[j].x(),
+				2.0f * p[j].x() * p[j].y(),
+				p[j].y() * p[j].y()
+			);
+		}
+
+		FullPivLU<Matrix3f> lu(A);
+		Vector3f res = lu.solve(Vector3f::Ones());
+
+		Q(0, 0) = res(0);
+		Q(1, 1) = res(2);
+		Q(0, 1) = Q(1, 0) = res(1);
+	}
+
+	Map<Vector3f> p0(p0_ptr), t1(t1_ptr), t2(t2_ptr);
+	{
+		SelfAdjointEigenSolver<Matrix2f> es;
+		es.compute(Q);
+
+		Vector2f const& l = es.eigenvalues();
+		Vector2f const& e0 = es.eigenvectors().col(0);
+		Vector2f const& e1 = es.eigenvectors().col(1);
+
+		p0 = d2;
+		t1 = (1.0f / std::sqrt(l.x())) * (d0 * e0.x() + d1 * e0.y());
+		t2 = (1.0f / std::sqrt(l.y())) * (d0 * e1.x() + d1 * e1.y());
+	}
 }
 
 void

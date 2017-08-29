@@ -119,6 +119,9 @@ public:
 
     void reshape(int width, int height);
 
+	static void computerPrincipalDirections(float const* vertex1_ptr, float const* vertex2_ptr, float const* vertex3_ptr,
+		float* ellipsis_center_ptr, float* ellipsis_principal_direction_1_ptr, float* ellipsis_principal_direction_2_ptr);
+
 private:
     void setup_program_objects();
     void setup_filter_kernel();
@@ -130,6 +133,9 @@ private:
     void begin_frame();
     void end_frame();
     void render_pass(bool depth_only = false);
+
+	static void steiner_circumellipse(float const* v0_ptr, float const* v1_ptr,
+		float const* v2_ptr, float* p0_ptr, float* t1_ptr, float* t2_ptr);
 
 private:
     GLviz::Camera const& m_camera;
