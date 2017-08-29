@@ -537,8 +537,8 @@ SplatRenderer::steiner_circumellipse(float const* v0_ptr, float const* v1_ptr,
 	Vector3f d0, d1, d2;
 	{
 		const Vector3f v0 = Map<const Vector3f>(v0_ptr);
-		const Vector3f v1 = Map<const Vector3f>(v0_ptr);
-		const Vector3f v2 = Map<const Vector3f>(v0_ptr);
+		const Vector3f v1 = Map<const Vector3f>(v1_ptr);
+		const Vector3f v2 = Map<const Vector3f>(v2_ptr);
 
 		const Vector3f v[3] = { v0, v1, v2 };
 

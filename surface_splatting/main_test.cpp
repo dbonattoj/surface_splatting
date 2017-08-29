@@ -51,7 +51,10 @@ void load_triangle_mesh(std::string const& filename);
 void
 displayFunc()
 {
-    viz->render_frame(m_surfels);
+    GLuint textureID = viz->render_frame(m_surfels);
+#ifndef NDEBUG
+	std::cout << "Texture ID: " << textureID << std::endl;
+#endif
 }
 
 void
@@ -342,10 +345,19 @@ load_dragon()
         };
 
         Vector3f p0, t1, t2;
+#ifndef NDEBUG
+		Vector3f &dbg = t2;
+		dbg[0] = 0; dbg[1] = 0; dbg[2] = 0;
+		std::cout << dbg[0] << " " << dbg[1] << " " << dbg[2] << std::endl;
+#endif
         viz->computerPrincipalDirections(
             v[0].data(), v[1].data(), v[2].data(),
             p0.data(), t1.data(), t2.data()
             );
+
+#ifndef NDEBUG
+		std::cout << dbg[0] << " " << dbg[1] << " " << dbg[2] << std::endl << std::endl;
+#endif
 
         Vector3f n_s = t1.cross(t2);
         Vector3f n_t = (v[1] - v[0]).cross(v[2] - v[0]);
@@ -379,7 +391,7 @@ main(int argc, char* argv[])
     camera.translate(Eigen::Vector3f(0.0f, 0.0f, -2.0f));
     viz = std::unique_ptr<SplatRenderer>(new SplatRenderer(camera));
 
-	/*
+	///*
     std::string filename = "stanford_dragon_v40k_f80k.raw";
     if (argc > 1)
         filename = argv[1];
@@ -390,11 +402,11 @@ main(int argc, char* argv[])
         std::cerr << e.what() << std::endl;
         std::exit(EXIT_FAILURE);
     }
-	*/
+	//*/
 
     //load_plane(200);
-    load_cube();
-	//load_dragon();
+    //load_cube();
+	load_dragon();
 
     GLviz::display_callback(displayFunc);
     GLviz::reshape_callback(reshapeFunc);
