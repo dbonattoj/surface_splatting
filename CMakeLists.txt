@@ -40,14 +40,14 @@ set(GLVIZ_SOURCE_DIR "${GLVIZ_ROOT}/src")
 set(SURFACE_SPLATTING_ROOT "${CMAKE_SOURCE_DIR}/surface_splatting")
 
 # Tools
-include(tools-compilers)
-include(tools-resources)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-compilers.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-resources.cmake)
 
 # Libraries
-include(libs-eigen3)
-include(libs-glew)
-include(libs-opengl)
-include(libs-sdl2)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-eigen3.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-glew.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-opengl.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-sdl2.cmake)
 
 # Put all executables and libraries into a common directory
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
