@@ -4,7 +4,7 @@ set(GLVIZ_NAME glviz)
 # Sources
 file(GLOB_RECURSE GLVIZ_SOURCES RELATIVE ${GLVIZ_ROOT} *.cpp)
 file(GLOB_RECURSE GLVIZ_HEADERS RELATIVE ${GLVIZ_ROOT} *.hpp)
-file(GLOB_RECURSE GLVIZ_SHADERS RELATIVE ${GLVIZ_ROOT} *.glsl)
+file(GLOB_RECURSE GLVIZ_SHADERS ${GLVIZ_ROOT} *.glsl)
 
 # Includes
 include_directories(
@@ -14,7 +14,7 @@ include_directories(
 )
 
 # Shaders
-set(GLVIZ_RESOURCES "${CMAKE_CURRENT_BINARY_DIR}/glviz_resources.hpp" "${CMAKE_CURRENT_BINARY_DIR}/glviz_resources.cpp")
+set(GLVIZ_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/glviz_resources.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/glviz_resources.cpp")
 wrap_resources("${GLVIZ_SHADERS}" ${GLVIZ_NAME} ${GLVIZ_RESOURCES})
 
 # Target
