@@ -39,6 +39,8 @@ set(GLVIZ_INCLUDE_DIR "${GLVIZ_ROOT}/include")
 set(GLVIZ_SOURCE_DIR "${GLVIZ_ROOT}/src")
 set(SURFACE_SPLATTING_ROOT "${CMAKE_SOURCE_DIR}/surface_splatting")
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
+
 # Tools
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-compilers.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-resources.cmake)
