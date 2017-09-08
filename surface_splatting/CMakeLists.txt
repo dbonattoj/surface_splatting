@@ -78,4 +78,10 @@ OPENGL_LINK("testMain")
 SDL2_LINK("testMain")
 target_link_libraries(testMain glviz ${SURFACE_SPLATTING_NAME})
 
+#install(TARGETS surface_splatting testMain
+#                LIBRARY DESTINATION lib
+#                RUNTIME DESTINATION lib
+#                ARCHIVE DESTINATION lib/static)
+#install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting/ DESTINATION include)
+
 

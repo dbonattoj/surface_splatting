@@ -58,3 +58,22 @@ set(LIBRARY_OUTPUT_PATH    "${PROJECT_BINARY_DIR}/bin")
 # Source
 add_subdirectory(glviz)
 add_subdirectory(surface_splatting)
+
+
+
+install(FILES ${LIBRARY_OUTPUT_PATH}/Release/surface_splatting.lib DESTINATION lib)
+install(FILES ${LIBRARY_OUTPUT_PATH}/Release/glviz.lib DESTINATION lib)
+
+file(GLOB_RECURSE SURFACE_SPLATTING_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting/*.hpp)
+#file(GLOB_RECURSE GLVIZ_HEADERS ${GLVIZ_ROOT} *.hpp)
+
+install(FILES ${SURFACE_SPLATTING_HEADERS} DESTINATION include/surface_splatting)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/surface_splattingConfig.cmake DESTINATION .)
+
+
+# testMain glviz
+#                LIBRARY DESTINATION lib
+#                RUNTIME DESTINATION lib
+#                ARCHIVE DESTINATION lib/static)
+#install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting/ DESTINATION include)
