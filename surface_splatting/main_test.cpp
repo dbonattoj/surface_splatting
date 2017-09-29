@@ -372,6 +372,7 @@ load_dragon()
         m_surfels[i].v = t2;
         m_surfels[i].p = Vector3f::Zero();
 
+#undef min // min version already included by windows.h ..
         float h = std::min((std::abs(p0.x()) / 0.45f) * 360.0f, 360.0f);
         float r, g, b;
         hsv2rgb(h, 1.0f, 1.0f, r, g, b);

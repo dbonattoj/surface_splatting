@@ -2,7 +2,7 @@
 set(GLVIZ_NAME glviz)
 
 # Sources
-file(GLOB_RECURSE GLVIZ_SOURCES ${GLVIZ_ROOT} *.cpp)
+file(GLOB_RECURSE GLVIZ_SOURCES ${GLVIZ_ROOT} *.cpp ${VENDORS_INCLUDES}/glad/src/)
 file(GLOB_RECURSE GLVIZ_HEADERS ${GLVIZ_ROOT} *.hpp)
 file(GLOB_RECURSE GLVIZ_SHADERS ${GLVIZ_ROOT} *.glsl)
 
@@ -11,6 +11,11 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${GLVIZ_INCLUDE_DIR}
     ${GLVIZ_SOURCE_DIR}
+)
+
+include_directories(
+	${VENDORS_INCLUDES}/Eigen/
+	${VENDORS_INCLUDES}/glad/include/
 )
 
 # Shaders
@@ -23,7 +28,7 @@ set_property(TARGET ${GLVIZ_NAME} PROPERTY CXX_STANDARD 11)
 
 # Libraries
 #EIGEN3_LINK(${GLVIZ_NAME})
-GLEW_LINK(${GLVIZ_NAME})
+#GLEW_LINK(${GLVIZ_NAME})
 OPENGL_LINK(${GLVIZ_NAME})
 SDL2_LINK(${GLVIZ_NAME})
 

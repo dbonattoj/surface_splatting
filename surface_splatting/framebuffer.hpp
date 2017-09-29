@@ -18,7 +18,7 @@
 #ifndef FRAMEBUFFER_HPP
 #define FRAMEBUFFER_HPP
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <memory>
 
 class Framebuffer

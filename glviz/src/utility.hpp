@@ -23,7 +23,7 @@
 #ifndef UTILITY_HPP
 #define UTILITY_HPP
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <Eigen/Core>
 
 #include <string>

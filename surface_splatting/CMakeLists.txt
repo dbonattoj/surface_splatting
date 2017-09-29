@@ -5,7 +5,7 @@ set(SURFACE_SPLATTING_NAME surface_splatting)
 set(SURFACE_SPLATTING_SOURCE_DIR "${SURFACE_SPLATTING_ROOT}")
 
 # Sources
-file(GLOB SURFACE_SPLATTING_SOURCES ${SURFACE_SPLATTING_SOURCE_DIR} *.cpp)
+file(GLOB SURFACE_SPLATTING_SOURCES ${SURFACE_SPLATTING_SOURCE_DIR} *.cpp ${VENDORS_INCLUDES}/glad/src/)
 file(GLOB SURFACE_SPLATTING_HEADERS ${SURFACE_SPLATTING_SOURCE_DIR} *.hpp)
 file(GLOB_RECURSE SURFACE_SPLATTING_SHADERS ${SURFACE_SPLATTING_SOURCE_DIR} *.glsl)
 
@@ -15,6 +15,13 @@ include_directories(
     ${GLVIZ_INCLUDE_DIR}
     ${GLVIZ_SOURCE_DIR}
 )
+
+include_directories(
+	${VENDORS_INCLUDES}/Eigen/
+	${VENDORS_INCLUDES}/glad/include/
+)
+
+message(WARNING ${VENDORS_INCLUDES}/Eigen/)
 
 # Shaders
 set(SURFACE_SPLATTING_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting_resources.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting_resources.cpp")
@@ -64,7 +71,7 @@ endif()
 
 # Libraries
 #EIGEN3_LINK(${SURFACE_SPLATTING_NAME})
-GLEW_LINK(${SURFACE_SPLATTING_NAME})
+#GLEW_LINK(${SURFACE_SPLATTING_NAME})
 OPENGL_LINK(${SURFACE_SPLATTING_NAME})
 SDL2_LINK(${SURFACE_SPLATTING_NAME})
 
@@ -73,7 +80,7 @@ add_executable(testMain "main_test.cpp")
 
 # Libraries
 #EIGEN3_LINK("testMain")
-GLEW_LINK("testMain")
+#GLEW_LINK("testMain")
 OPENGL_LINK("testMain")
 SDL2_LINK("testMain")
 target_link_libraries(testMain glviz ${SURFACE_SPLATTING_NAME})

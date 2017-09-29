@@ -41,13 +41,15 @@ set(SURFACE_SPLATTING_ROOT "${CMAKE_SOURCE_DIR}/surface_splatting")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 
+set(VENDORS_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/vendors)
+
 # Tools
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-compilers.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-resources.cmake)
 
 # Libraries
 #include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-eigen3.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-glew.cmake)
+#include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-glew.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-opengl.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-sdl2.cmake)
 

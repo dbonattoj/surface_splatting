@@ -25,7 +25,7 @@
 
 #include "camera.hpp"
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <SDL.h>
 
 #include <iostream>
@@ -227,13 +227,6 @@ cout_opengl_version()
 }
 
 void
-cout_glew_version()
-{
-    std::cout << "  GLEW version " << glewGetString(GLEW_VERSION)
-        << "." << std::endl;
-}
-
-void
 init(int argc, char* argv[])
 {
     // Initialize SDL.
@@ -287,26 +280,12 @@ init(int argc, char* argv[])
     // Print OpenGL version.
     cout_opengl_version();
 
-    // Initialize GLEW.
+    // Initialize GLAD.
     {
-        glewExperimental = GL_TRUE;
-        GLenum glew_error = glewInit();
-
-        if (GLEW_OK != glew_error)
+        if (!gladLoadGL())
         {
-            std::cerr << "Failed to initialize GLEW:" << std::endl;
-            std::cerr << __FILE__ << "(" << __LINE__ << "): "
-                      << glewGetErrorString(glew_error) << std::endl;
+            printf("samplevr: Failed to initialize OpenGL context");
             std::exit(EXIT_FAILURE);
-        }
-
-        // GLEW has a problem with core contexts. It calls
-        // glGetString(GL_EXTENSIONS), which causes a GL_INVALID_ENUM error.
-        GLenum gl_error = glGetError();
-        if (GL_NO_ERROR != gl_error && GL_INVALID_ENUM != gl_error)
-        {
-            std::cerr << __FILE__ << "(" << __LINE__ << "): "
-                      << GLviz::get_gl_error_string(gl_error) << std::endl;
         }
     }
 
