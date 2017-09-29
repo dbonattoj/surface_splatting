@@ -46,7 +46,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-compilers.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/tools-resources.cmake)
 
 # Libraries
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-eigen3.cmake)
+#include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-eigen3.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-glew.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-opengl.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/libs-sdl2.cmake)
@@ -65,9 +65,13 @@ install(FILES ${LIBRARY_OUTPUT_PATH}/Release/surface_splatting.lib DESTINATION l
 install(FILES ${LIBRARY_OUTPUT_PATH}/Release/glviz.lib DESTINATION lib)
 
 file(GLOB_RECURSE SURFACE_SPLATTING_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting/*.hpp)
-#file(GLOB_RECURSE GLVIZ_HEADERS ${GLVIZ_ROOT} *.hpp)
-
-install(FILES ${SURFACE_SPLATTING_HEADERS} DESTINATION include/surface_splatting)
+foreach(header ${SURFACE_SPLATTING_HEADERS})
+	install(FILES ${header} DESTINATION include/surface_splatting)
+endforeach()
+file(GLOB_RECURSE GLVIZ_HEADERS ${GLVIZ_ROOT} *.hpp)
+foreach(header ${GLVIZ_HEADERS})
+	install(FILES ${header} DESTINATION include/surface_splatting/GLviz)
+endforeach()
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/surface_splattingConfig.cmake DESTINATION .)
 
