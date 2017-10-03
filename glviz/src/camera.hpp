@@ -81,11 +81,11 @@ public:
     void trackball_end_motion_zoom(float end_x, float end_y);
     void trackball_end_motion_translate(float end_x, float end_y);
 
-private:
+protected:
     void set_projection_matrix_from_frustum();
     void set_modelview_matrix_from_orientation();
 
-private:
+protected:
     Eigen::Vector3f m_position;
     Eigen::Quaternionf m_orientation;
 
