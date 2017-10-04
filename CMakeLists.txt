@@ -34,10 +34,15 @@ endif()
 
 # Paths
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules")
+
 set(GLVIZ_ROOT "${CMAKE_SOURCE_DIR}/glviz")
 set(GLVIZ_INCLUDE_DIR "${GLVIZ_ROOT}/include")
 set(GLVIZ_SOURCE_DIR "${GLVIZ_ROOT}/src")
+
 set(SURFACE_SPLATTING_ROOT "${CMAKE_SOURCE_DIR}/surface_splatting")
+set(SURFACE_SPLATTING_INCLUDE_DIR "${SURFACE_SPLATTING_ROOT}")
+
+set(TEST_ROOT "${CMAKE_SOURCE_DIR}/test")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 
@@ -60,20 +65,24 @@ set(LIBRARY_OUTPUT_PATH    "${PROJECT_BINARY_DIR}/bin")
 # Source
 add_subdirectory(glviz)
 add_subdirectory(surface_splatting)
+add_subdirectory(test)
 
 
 
-install(FILES ${LIBRARY_OUTPUT_PATH}/Release/surface_splatting.lib DESTINATION lib)
-install(FILES ${LIBRARY_OUTPUT_PATH}/Release/glviz.lib DESTINATION lib)
+install(FILES ${LIBRARY_OUTPUT_PATH}/MinSizeRel/surface_splatting.lib DESTINATION lib)
+install(FILES ${LIBRARY_OUTPUT_PATH}/MinSizeRel/glviz.lib DESTINATION lib)
 
 file(GLOB_RECURSE SURFACE_SPLATTING_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting/*.hpp)
 foreach(header ${SURFACE_SPLATTING_HEADERS})
 	install(FILES ${header} DESTINATION include/surface_splatting)
 endforeach()
-file(GLOB_RECURSE GLVIZ_HEADERS ${GLVIZ_ROOT} *.hpp)
+file(GLOB_RECURSE GLVIZ_HEADERS ${GLVIZ_ROOT}/*.hpp)
 foreach(header ${GLVIZ_HEADERS})
-	install(FILES ${header} DESTINATION include/surface_splatting/GLviz)
+	install(FILES ${header} DESTINATION include/GLviz/src/)
 endforeach()
+
+install(FILES "${GLVIZ_INCLUDE_DIR}/GLviz" DESTINATION include/GLviz/include/)
+
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/surface_splattingConfig.cmake DESTINATION .)
 

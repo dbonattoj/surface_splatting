@@ -713,3 +713,17 @@ SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry)
 
 	return m_fbo.color_texture();
 }
+
+void CrudeCamera::set_Model(const Eigen::Matrix4f & model)
+{
+    m_model_matrix = model;
+}
+void CrudeCamera::set_View(const Eigen::Matrix4f & view)
+{
+    m_view_matrix = view;
+}
+
+void CrudeCamera::set_Projection(const Eigen::Matrix4f & projection)
+{
+    m_projection_matrix = projection;
+}

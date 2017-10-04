@@ -29,6 +29,13 @@
 #include <string>
 #include <vector>
 
+class CrudeCamera : public GLviz::Camera {
+public:
+    void set_Model(const Eigen::Matrix4f & model);
+    void set_View(const Eigen::Matrix4f & view);
+    void set_Projection(const Eigen::Matrix4f & projection);
+};
+
 struct Surfel
 {
     Surfel() { }
@@ -121,6 +128,10 @@ public:
 
 	static void computerPrincipalDirections(float const* vertex1_ptr, float const* vertex2_ptr, float const* vertex3_ptr,
 		float* ellipsis_center_ptr, float* ellipsis_principal_direction_1_ptr, float* ellipsis_principal_direction_2_ptr);
+
+    GLuint get_fbo_texture_id() {
+        return m_fbo.color_texture();
+    }
 
 private:
     void setup_program_objects();

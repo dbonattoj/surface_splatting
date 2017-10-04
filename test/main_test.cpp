@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Surface Splatting. If not, see <http://www.gnu.org/licenses/>.
 
-#include <GLviz>
+#include "../glviz/include/GLviz"
 
-#include "splat_renderer.hpp"
+#include "../surface_splatting/splat_renderer.hpp"
 
-#include <Eigen/Core>
+#include "../vendors/Eigen/Core"
 
 #include <iostream>
 #include <memory>
@@ -31,10 +31,8 @@
 
 using namespace Eigen;
 
-namespace
-{
 
-GLviz::Camera camera;
+GLviz::Scene_Camera camera;
 std::unique_ptr<SplatRenderer> viz;
 
 std::vector<Eigen::Vector3f>               m_ref_vertices;
@@ -382,11 +380,16 @@ load_dragon()
     }
 }
 
-}
 
 int
 main(int argc, char* argv[])
 {
+    if (!gladLoadGL())
+    {
+        printf("main_test: Failed to initialize OpenGL context");
+        return -1;
+    }
+
     GLviz::init(argc, argv);
 
     camera.translate(Eigen::Vector3f(0.0f, 0.0f, -2.0f));

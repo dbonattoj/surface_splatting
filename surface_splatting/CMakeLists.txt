@@ -5,9 +5,9 @@ set(SURFACE_SPLATTING_NAME surface_splatting)
 set(SURFACE_SPLATTING_SOURCE_DIR "${SURFACE_SPLATTING_ROOT}")
 
 # Sources
-file(GLOB SURFACE_SPLATTING_SOURCES ${SURFACE_SPLATTING_SOURCE_DIR} *.cpp ${VENDORS_INCLUDES}/glad/src/)
-file(GLOB SURFACE_SPLATTING_HEADERS ${SURFACE_SPLATTING_SOURCE_DIR} *.hpp)
-file(GLOB_RECURSE SURFACE_SPLATTING_SHADERS ${SURFACE_SPLATTING_SOURCE_DIR} *.glsl)
+file(GLOB SURFACE_SPLATTING_SOURCES ${SURFACE_SPLATTING_SOURCE_DIR}/*.cpp ${VENDORS_INCLUDES}/glad/src/)
+file(GLOB SURFACE_SPLATTING_HEADERS ${SURFACE_SPLATTING_SOURCE_DIR}/*.hpp)
+file(GLOB_RECURSE SURFACE_SPLATTING_SHADERS ${SURFACE_SPLATTING_SOURCE_DIR}/*.glsl)
 
 # Includes
 include_directories(
@@ -21,10 +21,8 @@ include_directories(
 	${VENDORS_INCLUDES}/glad/include/
 )
 
-message(WARNING ${VENDORS_INCLUDES}/Eigen/)
-
 # Shaders
-set(SURFACE_SPLATTING_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting_resources.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting_resources.cpp")
+set(SURFACE_SPLATTING_RESOURCES "${SURFACE_SPLATTING_SOURCE_DIR}/surface_splatting_resources.hpp" "${SURFACE_SPLATTING_SOURCE_DIR}/surface_splatting_resources.cpp")
 wrap_resources("${SURFACE_SPLATTING_SHADERS}" ${SURFACE_SPLATTING_NAME} ${SURFACE_SPLATTING_RESOURCES})
 
 # Target
@@ -41,7 +39,7 @@ option("${SURFACE_SPLATTING_NAME}_pyModule" "Build a python module for ${SURFACE
 if (${SURFACE_SPLATTING_NAME}_pyModule)
   include(libs-python)
   
-  set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/py_surface_splatting/setup.py.in")
+  set(SETUP_PY_IN "${SURFACE_SPLATTING_SOURCE_DIR}/py_surface_splatting/setup.py.in")
   set(SETUP_PY "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
   
   configure_file(${SETUP_PY_IN} ${SETUP_PY})
@@ -75,20 +73,11 @@ endif()
 OPENGL_LINK(${SURFACE_SPLATTING_NAME})
 SDL2_LINK(${SURFACE_SPLATTING_NAME})
 
-# TESTS MAIN
-add_executable(testMain "main_test.cpp")
-
-# Libraries
-#EIGEN3_LINK("testMain")
-#GLEW_LINK("testMain")
-OPENGL_LINK("testMain")
-SDL2_LINK("testMain")
-target_link_libraries(testMain glviz ${SURFACE_SPLATTING_NAME})
 
 #install(TARGETS surface_splatting testMain
 #                LIBRARY DESTINATION lib
 #                RUNTIME DESTINATION lib
 #                ARCHIVE DESTINATION lib/static)
-#install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/surface_splatting/ DESTINATION include)
+#install(FILES ${SURFACE_SPLATTING_SOURCE_DIR}/surface_splatting/ DESTINATION include)
 
 
