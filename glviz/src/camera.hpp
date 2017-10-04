@@ -49,6 +49,12 @@ private:
     float m_near, m_far;
 };
 
+
+struct Plane {
+    Eigen::Vector3f normal;
+    float distance;
+};
+
 class Camera
 {
 
@@ -56,6 +62,8 @@ public:
     Camera();
     virtual ~Camera();
 
+    Eigen::Matrix4f const& get_model_matrix() const;
+    Eigen::Matrix4f const& get_view_matrix() const;
     Eigen::Matrix4f const& get_modelview_matrix() const;
     Eigen::Matrix4f const& get_projection_matrix() const;
     Frustum const& get_frustum() const;
@@ -81,15 +89,21 @@ public:
     void trackball_end_motion_zoom(float end_x, float end_y);
     void trackball_end_motion_translate(float end_x, float end_y);
 
+
+    void set_frustum_from_modelViewProjection_matrix(Eigen::Matrix4f const & MVP);
+
 protected:
     void set_projection_matrix_from_frustum();
+    void compute_frustum_planes_from_model_view_projection_matrix(Eigen::Matrix4f const & MVP, Plane & left, Plane & right, Plane & top, Plane & bottom, Plane & near_, Plane &far_);
+    Eigen::Vector3f intersection_plane_plane_plane(Plane const & p1, Plane const & p2, Plane const & p3);
     void set_modelview_matrix_from_orientation();
 
 protected:
     Eigen::Vector3f m_position;
     Eigen::Quaternionf m_orientation;
 
-    Eigen::Matrix4f m_modelview_matrix;
+    Eigen::Matrix4f m_model_matrix;
+    Eigen::Matrix4f m_view_matrix;
     Eigen::Matrix4f m_projection_matrix;
 
     Frustum m_frustum;

@@ -47,9 +47,21 @@ Camera::get_frustum() const
 }
 
 Matrix4f const&
+Camera::get_model_matrix() const
+{
+    return m_model_matrix;
+}
+
+Matrix4f const&
+Camera::get_view_matrix() const
+{
+    return m_view_matrix;
+}
+
+Matrix4f const&
 Camera::get_modelview_matrix() const
 {
-    return m_modelview_matrix;
+    return m_view_matrix*m_model_matrix;
 }
 
 Matrix4f const&
@@ -78,17 +90,99 @@ Camera::set_projection_matrix_from_frustum()
 }
 
 void
+Camera::set_frustum_from_modelViewProjection_matrix(Eigen::Matrix4f const &MVP) {
+    
+    Plane pL, pR, pB, pT, pN, pF;
+    compute_frustum_planes_from_model_view_projection_matrix(MVP, pL, pR, pT, pB, pN, pF);
+
+    m_frustum.left() = intersection_plane_plane_plane(pN, pL, pB)[0];
+    m_frustum.right() = intersection_plane_plane_plane(pN, pR, pB)[0];
+
+    m_frustum.top() = intersection_plane_plane_plane(pN, pL, pT)[2];
+    m_frustum.bottom() = intersection_plane_plane_plane(pN, pL, pB)[2];
+
+    m_frustum.near_() = intersection_plane_plane_plane(pN, pL, pB)[1];
+    m_frustum.far_() = intersection_plane_plane_plane(pF, pL, pB)[1];
+
+}
+
+void Camera::compute_frustum_planes_from_model_view_projection_matrix(Eigen::Matrix4f const &MVP, Plane &left, Plane &right, Plane &top, Plane &bottom, Plane &near_, Plane &far_) {
+    Plane &L = left;
+    Plane &R = right;
+    Plane &T = top;
+    Plane &B = bottom;
+    Plane &N = near_;
+    Plane &F = far_;
+
+    L.normal[0] = MVP(0, 0) + MVP(3, 0);
+    L.normal[1] = MVP(0, 1) + MVP(3, 1);
+    L.normal[2] = MVP(0, 2) + MVP(3, 2);
+    L.distance = MVP(0, 3) + MVP(3, 3);
+
+    R.normal[0] = -MVP(0, 0) + MVP(3, 0);
+    R.normal[1] = -MVP(0, 1) + MVP(3, 1);
+    R.normal[2] = -MVP(0, 2) + MVP(3, 2);
+    R.distance = -MVP(0, 3) + MVP(3, 3);
+
+
+    B.normal[0] = MVP(1, 0) + MVP(3, 0);
+    B.normal[1] = MVP(1, 1) + MVP(3, 1);
+    B.normal[2] = MVP(1, 2) + MVP(3, 2);
+    B.distance = MVP(1, 3) + MVP(3, 3);
+
+    T.normal[0] = -MVP(1, 0) + MVP(3, 0);
+    T.normal[1] = -MVP(1, 1) + MVP(3, 1);
+    T.normal[2] = -MVP(1, 2) + MVP(3, 2);
+    T.distance = -MVP(1, 3) + MVP(3, 3);
+
+
+    N.normal[0] = MVP(2, 0) + MVP(3, 0);
+    N.normal[1] = MVP(2, 1) + MVP(3, 1);
+    N.normal[2] = MVP(2, 2) + MVP(3, 2);
+    N.distance = MVP(2, 3) + MVP(3, 3);
+
+    F.normal[0] = -MVP(2, 0) + MVP(3, 0);
+    F.normal[1] = -MVP(2, 1) + MVP(3, 1);
+    F.normal[2] = -MVP(2, 2) + MVP(3, 2);
+    F.distance = -MVP(2, 3) + MVP(3, 3);
+}
+
+Eigen::Vector3f Camera::intersection_plane_plane_plane(Plane const & p1, Plane const & p2, Plane const &p3) {
+
+    Eigen::Matrix3f matrix_of_planes_normal;
+    for (size_t comp = 0; comp < 3; ++comp)
+        matrix_of_planes_normal(0, comp) = p1.normal[comp];
+
+    for (size_t comp = 0; comp < 3; ++comp)
+        matrix_of_planes_normal(1, comp) = p2.normal[comp];
+
+    for (size_t comp = 0; comp < 3; ++comp)
+        matrix_of_planes_normal(2, comp) = p3.normal[comp];
+
+    const float det = matrix_of_planes_normal.determinant();
+
+    if (det == 0) return Eigen::Vector3f();
+
+    Eigen::Vector3f point = (p2.normal.cross(p3.normal)* (-p1.distance)
+        + p3.normal.cross(p1.normal) * (-p2.distance)
+        + p1.normal.cross(p2.normal) * (-p3.distance)) / det;
+
+    return std::move(point);
+}
+
+void
 Camera::set_modelview_matrix_from_orientation()
 {
     Matrix3f dir = AngleAxisf(m_orientation).inverse().toRotationMatrix();
 
-    m_modelview_matrix = Matrix4f::Identity();
+    m_model_matrix = Matrix4f::Identity();
+    m_view_matrix = Matrix4f::Identity();
 
     Vector3f ori = dir * m_position;
    
     // Translation * Rotation
-    m_modelview_matrix.topLeftCorner(3, 3) = dir;
-    m_modelview_matrix.topRightCorner(3, 1) = m_position;
+    m_view_matrix.topLeftCorner(3, 3) = dir;
+    m_model_matrix.topRightCorner(3, 1) = m_position;
 }
 
 void
