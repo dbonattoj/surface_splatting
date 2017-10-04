@@ -55,17 +55,30 @@ struct Plane {
     float distance;
 };
 
-class Camera
+class Camera {
+public:
+    Eigen::Matrix4f const& get_model_matrix() const;
+    Eigen::Matrix4f const& get_view_matrix() const;
+    Eigen::Matrix4f const& get_projection_matrix() const;
+
+    void set_model_matrix(Eigen::Matrix4f const& model);
+    void set_view_matrix(Eigen::Matrix4f const& view);
+    void set_projection_matrix(Eigen::Matrix4f const& projection);
+
+
+protected:
+    Eigen::Matrix4f m_model_matrix;
+    Eigen::Matrix4f m_view_matrix;
+    Eigen::Matrix4f m_projection_matrix;
+};
+
+class Scene_Camera : public Camera
 {
 
 public:
-    Camera();
-    virtual ~Camera();
+    Scene_Camera();
+    virtual ~Scene_Camera();
 
-    Eigen::Matrix4f const& get_model_matrix() const;
-    Eigen::Matrix4f const& get_view_matrix() const;
-    Eigen::Matrix4f const& get_modelview_matrix() const;
-    Eigen::Matrix4f const& get_projection_matrix() const;
     Frustum const& get_frustum() const;
 
     void set_frustum(Frustum const& frustum);
@@ -101,10 +114,6 @@ protected:
 protected:
     Eigen::Vector3f m_position;
     Eigen::Quaternionf m_orientation;
-
-    Eigen::Matrix4f m_model_matrix;
-    Eigen::Matrix4f m_view_matrix;
-    Eigen::Matrix4f m_projection_matrix;
 
     Frustum m_frustum;
     float m_fovy_rad;

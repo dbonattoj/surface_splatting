@@ -116,7 +116,9 @@ UniformBufferCamera::UniformBufferCamera()
 void
 UniformBufferCamera::set_buffer_data(Camera const& camera)
 {
-    Matrix4f const& modelview_matrix = camera.get_modelview_matrix();
+    Matrix4f const& model_matrix = camera.get_model_matrix();
+    Matrix4f const& view_matrix = camera.get_view_matrix();
+    Matrix4f const& modelview_matrix = model_matrix*view_matrix;
     Matrix4f const& projection_matrix = camera.get_projection_matrix();
 
     bind();

@@ -50,7 +50,7 @@ std::function<void (unsigned int)>          m_timer_callback;
 std::function<void(int width, int height)>  m_reshape_callback;
 std::function<void ()>                      m_close_callback;
 
-Camera*  m_camera;
+Scene_Camera*  m_camera;
 
 void
 reshapeFunc(int width, int height)
@@ -169,7 +169,7 @@ camera()
 }
 
 void
-set_camera(Camera& camera)
+set_camera(Scene_Camera& camera)
 {
     m_camera = &camera;
 }
@@ -284,7 +284,7 @@ init(int argc, char* argv[])
     {
         if (!gladLoadGL())
         {
-            printf("samplevr: Failed to initialize OpenGL context");
+            printf("glviz: Failed to initialize OpenGL context");
             std::exit(EXIT_FAILURE);
         }
     }
@@ -295,7 +295,7 @@ init(int argc, char* argv[])
 }
 
 int
-exec(Camera& camera)
+exec(Scene_Camera& camera)
 {
     m_camera = &camera;
     Uint32 last_time = 0;

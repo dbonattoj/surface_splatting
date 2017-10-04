@@ -29,49 +29,61 @@ using namespace Eigen;
 namespace GLviz
 {
 
-Camera::Camera()
+    Matrix4f const&
+        Camera::get_model_matrix() const
+    {
+        return m_model_matrix;
+    }
+
+    Matrix4f const&
+        Camera::get_view_matrix() const
+    {
+        return m_view_matrix;
+    }
+
+
+    Matrix4f const&
+        Camera::get_projection_matrix() const
+    {
+        return m_projection_matrix;
+    }
+
+    void Camera::set_model_matrix(Eigen::Matrix4f const & model)
+    {
+        m_model_matrix = model;
+    }
+
+    void Camera::set_view_matrix(Eigen::Matrix4f const & view)
+    {
+        m_view_matrix = view;
+    }
+
+    void Camera::set_projection_matrix(Eigen::Matrix4f const & projection)
+    {
+        m_projection_matrix = projection;
+    }
+
+
+
+Scene_Camera::Scene_Camera()
     : m_position(Vector3f::Zero()),
       m_orientation(Quaternionf::Identity())
 {
     set_perspective(60.0f, 4.0f / 3.0f, 0.25f, 10.0f);
 }
 
-Camera::~Camera()
+Scene_Camera::~Scene_Camera()
 {
 }
 
 Frustum const&
-Camera::get_frustum() const
+Scene_Camera::get_frustum() const
 {
     return m_frustum;
 }
 
-Matrix4f const&
-Camera::get_model_matrix() const
-{
-    return m_model_matrix;
-}
-
-Matrix4f const&
-Camera::get_view_matrix() const
-{
-    return m_view_matrix;
-}
-
-Matrix4f const&
-Camera::get_modelview_matrix() const
-{
-    return m_view_matrix*m_model_matrix;
-}
-
-Matrix4f const&
-Camera::get_projection_matrix() const
-{
-    return m_projection_matrix;
-}
-
 void
-Camera::set_projection_matrix_from_frustum()
+Scene_Camera::set_projection_matrix_from_frustum()
 {
     const float l = m_frustum.left();
     const float r = m_frustum.right();
@@ -90,7 +102,7 @@ Camera::set_projection_matrix_from_frustum()
 }
 
 void
-Camera::set_frustum_from_modelViewProjection_matrix(Eigen::Matrix4f const &MVP) {
+Scene_Camera::set_frustum_from_modelViewProjection_matrix(Eigen::Matrix4f const &MVP) {
     
     Plane pL, pR, pB, pT, pN, pF;
     compute_frustum_planes_from_model_view_projection_matrix(MVP, pL, pR, pT, pB, pN, pF);
@@ -106,7 +118,7 @@ Camera::set_frustum_from_modelViewProjection_matrix(Eigen::Matrix4f const &MVP) 
 
 }
 
-void Camera::compute_frustum_planes_from_model_view_projection_matrix(Eigen::Matrix4f const &MVP, Plane &left, Plane &right, Plane &top, Plane &bottom, Plane &near_, Plane &far_) {
+void Scene_Camera::compute_frustum_planes_from_model_view_projection_matrix(Eigen::Matrix4f const &MVP, Plane &left, Plane &right, Plane &top, Plane &bottom, Plane &near_, Plane &far_) {
     Plane &L = left;
     Plane &R = right;
     Plane &T = top;
@@ -147,7 +159,7 @@ void Camera::compute_frustum_planes_from_model_view_projection_matrix(Eigen::Mat
     F.distance = -MVP(2, 3) + MVP(3, 3);
 }
 
-Eigen::Vector3f Camera::intersection_plane_plane_plane(Plane const & p1, Plane const & p2, Plane const &p3) {
+Eigen::Vector3f Scene_Camera::intersection_plane_plane_plane(Plane const & p1, Plane const & p2, Plane const &p3) {
 
     Eigen::Matrix3f matrix_of_planes_normal;
     for (size_t comp = 0; comp < 3; ++comp)
@@ -171,7 +183,7 @@ Eigen::Vector3f Camera::intersection_plane_plane_plane(Plane const & p1, Plane c
 }
 
 void
-Camera::set_modelview_matrix_from_orientation()
+Scene_Camera::set_modelview_matrix_from_orientation()
 {
     Matrix3f dir = AngleAxisf(m_orientation).inverse().toRotationMatrix();
 
@@ -186,7 +198,7 @@ Camera::set_modelview_matrix_from_orientation()
 }
 
 void
-Camera::set_frustum(Frustum const& frustum)
+Scene_Camera::set_frustum(Frustum const& frustum)
 {
     m_frustum = frustum;
     
@@ -197,7 +209,7 @@ Camera::set_frustum(Frustum const& frustum)
 }
 
 void
-Camera::set_perspective(float fovy, float aspect, float near_, float far_)
+Scene_Camera::set_perspective(float fovy, float aspect, float near_, float far_)
 {
     m_fovy_rad = (static_cast<float>(M_PI) / 180.0f) * fovy;
     m_aspect = aspect;
@@ -213,7 +225,7 @@ Camera::set_perspective(float fovy, float aspect, float near_, float far_)
 }
 
 void
-Camera::set_aspect(float aspect)
+Scene_Camera::set_aspect(float aspect)
 {
     m_aspect = aspect;
 
@@ -224,7 +236,7 @@ Camera::set_aspect(float aspect)
 }
 
 void
-Camera::set_position(Vector3f const& position)
+Scene_Camera::set_position(Vector3f const& position)
 {
     m_position = position;
 
@@ -232,7 +244,7 @@ Camera::set_position(Vector3f const& position)
 }
 
 void
-Camera::set_orientation(Matrix3f const& orientation)
+Scene_Camera::set_orientation(Matrix3f const& orientation)
 {
     m_orientation = Quaternionf(orientation);
     m_orientation.normalize();
@@ -241,7 +253,7 @@ Camera::set_orientation(Matrix3f const& orientation)
 }
 
 void
-Camera::set_orientation(Quaternionf const& orientation)
+Scene_Camera::set_orientation(Quaternionf const& orientation)
 {
     m_orientation = orientation;
     m_orientation.normalize();
@@ -250,7 +262,7 @@ Camera::set_orientation(Quaternionf const& orientation)
 }
 
 void
-Camera::rotate(Quaternionf const& rotation)
+Scene_Camera::rotate(Quaternionf const& rotation)
 {
     Quaternionf ret = m_orientation * rotation;
     m_orientation = ret;
@@ -260,13 +272,13 @@ Camera::rotate(Quaternionf const& rotation)
 }
 
 void
-Camera::rotate(Matrix3f const& rotation)
+Scene_Camera::rotate(Matrix3f const& rotation)
 {
     rotate(Quaternionf(rotation));
 }
 
 void
-Camera::translate(Vector3f const& translation)
+Scene_Camera::translate(Vector3f const& translation)
 {
     m_position += translation;
     
@@ -274,14 +286,14 @@ Camera::translate(Vector3f const& translation)
 }
 
 void
-Camera::trackball_begin_motion(float begin_x, float begin_y)
+Scene_Camera::trackball_begin_motion(float begin_x, float begin_y)
 {
     m_begin_x = begin_x;
     m_begin_y = begin_y;
 }
 
 void
-Camera::trackball_end_motion_rotate(float end_x, float end_y)
+Scene_Camera::trackball_end_motion_rotate(float end_x, float end_y)
 {
     float u0_x = 2.0f * m_begin_x - 1.0f;
     float u0_y = 1.0f - 2.0f * m_begin_y;
@@ -295,7 +307,7 @@ Camera::trackball_end_motion_rotate(float end_x, float end_y)
 }
 
 void
-Camera::trackball_end_motion_zoom(float end_x, float end_y)
+Scene_Camera::trackball_end_motion_zoom(float end_x, float end_y)
 {
     float dy = end_y - m_begin_y;
 
@@ -304,7 +316,7 @@ Camera::trackball_end_motion_zoom(float end_x, float end_y)
     trackball_begin_motion(end_x, end_y);
 }
 
-void Camera::trackball_end_motion_translate(float end_x, float end_y)
+void Scene_Camera::trackball_end_motion_translate(float end_x, float end_y)
 {
     float dx = end_x - m_begin_x;
     float dy = end_y - m_begin_y;
