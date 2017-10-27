@@ -89,7 +89,8 @@ SplatRenderer::SplatRenderer(GLviz::Camera const& camera)
       m_pointsize_method(2),
       m_color(Vector3f(0.0, 0.25f, 1.0f)),
       m_epsilon(5.0f * 1e-3f), m_shininess(8.0f), m_radius_scale(1.0f),
-      m_ewa_radius(1.0f)
+      m_ewa_radius(1.0f),
+      is_custom_viewport(false)
 {
     m_uniform_camera.bind_buffer_base(0);
     m_uniform_raycast.bind_buffer_base(1);
@@ -436,6 +437,16 @@ SplatRenderer::reshape(int width, int height)
     m_fbo.reshape(width, height);
 }
 
+void SplatRenderer::set_custom_viewport(int startx, int starty, int width, int height)
+{
+    is_custom_viewport = true;
+    
+    custom_viewport[0] = startx;
+    custom_viewport[1] = starty;
+    custom_viewport[2] = width;
+    custom_viewport[3] = height;
+}
+
 void SplatRenderer::computerPrincipalDirections(float const * vertex1_ptr, float const * vertex2_ptr, float const * vertex3_ptr, float * ellipsis_center_ptr, float * ellipsis_principal_direction_1_ptr, float * ellipsis_principal_direction_2_ptr)
 {
 	steiner_circumellipse(vertex1_ptr, vertex2_ptr, vertex3_ptr, ellipsis_center_ptr, ellipsis_principal_direction_1_ptr, ellipsis_principal_direction_2_ptr);
@@ -447,7 +458,17 @@ SplatRenderer::setup_uniforms(glProgram& program)
     m_uniform_camera.set_buffer_data(m_camera);
 
     GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
+    if (is_custom_viewport) {
+
+    }
+    else {
+        glGetIntegerv(GL_VIEWPORT, viewport);
+    }
+	static bool first_time = true;
+	if (first_time) {
+		printf("VIEWPORT: %d %d %d %d\n", viewport[0], viewport[1], viewport[2], viewport[3]);
+		first_time = false;
+	}
     //GLviz::Frustum view_frustum = m_camera.get_frustum();
 
     m_uniform_raycast.set_buffer_data(
@@ -594,14 +615,14 @@ SplatRenderer::steiner_circumellipse(float const* v0_ptr, float const* v1_ptr,
 }
 
 void
-SplatRenderer::begin_frame()
+SplatRenderer::begin_frame(float r, float g, float b, float a)
 {
     m_fbo.bind();
 
     glDepthMask(GL_TRUE);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClearColor(r, g, b, a);
     glClearDepth(1.0);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -665,9 +686,9 @@ SplatRenderer::end_frame()
 }
 
 GLuint
-SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry)
+SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry, float r, float g, float b, float a)
 {
-    begin_frame();
+    begin_frame(r, g, b, a);
 
     m_num_pts = static_cast<unsigned int>(visible_geometry.size());
 
@@ -711,7 +732,7 @@ SplatRenderer::render_frame(std::vector<Surfel> const& visible_geometry)
     }
 #endif
 
-	return m_fbo.color_texture();
+	return m_fbo.get_fbo();
 }
 
 void CrudeCamera::set_Model(const Eigen::Matrix4f & model)

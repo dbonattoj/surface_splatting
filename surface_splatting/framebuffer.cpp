@@ -274,6 +274,11 @@ Framebuffer::normal_texture()
     return m_normal;
 }
 
+const GLuint Framebuffer::get_fbo()
+{
+	return m_fbo;
+}
+
 void
 Framebuffer::set_multisample(bool enable)
 {

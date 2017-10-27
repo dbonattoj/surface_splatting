@@ -87,7 +87,7 @@ public:
     SplatRenderer(GLviz::Camera const& camera);
     virtual ~SplatRenderer();
 
-    GLuint render_frame(std::vector<Surfel> const& visible_geometry);
+    GLuint render_frame(std::vector<Surfel> const& visible_geometry, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f);
 
     bool smooth() const;
     void set_smooth(bool enable = true);
@@ -125,6 +125,7 @@ public:
     void set_ewa_radius(float ewa_radius);
 
     void reshape(int width, int height);
+    void set_custom_viewport(int startx, int starty, int width, int height);
 
 	static void computerPrincipalDirections(float const* vertex1_ptr, float const* vertex2_ptr, float const* vertex3_ptr,
 		float* ellipsis_center_ptr, float* ellipsis_principal_direction_1_ptr, float* ellipsis_principal_direction_2_ptr);
@@ -141,7 +142,7 @@ private:
 
     void setup_uniforms(glProgram& program);
 
-    void begin_frame();
+    void begin_frame(float r, float g, float b, float a);
     void end_frame();
     void render_pass(bool depth_only = false);
 
@@ -173,6 +174,9 @@ private:
     UniformBufferRaycast m_uniform_raycast;
     UniformBufferFrustum m_uniform_frustum;
     UniformBufferParameter m_uniform_parameter;
+
+    bool is_custom_viewport;
+    GLuint custom_viewport[4];
 };
 
 #endif // SPLATRENDER_HPP

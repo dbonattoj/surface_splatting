@@ -38,6 +38,8 @@ public:
     void detach_normal_texture();
     GLuint normal_texture();
 
+	const GLuint get_fbo();
+
     void set_multisample(bool enable = true);
 
     void bind();
