@@ -87,7 +87,8 @@ public:
     SplatRenderer(GLviz::Camera const& camera);
     virtual ~SplatRenderer();
 
-    GLuint render_frame(std::vector<Surfel> const& visible_geometry, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 0.0f);
+	void set_geometry(std::vector<Surfel> &visible_geometry);
+	GLuint render_frame(bool has_data_changed, float r, float g, float b, float a);
 
     bool smooth() const;
     void set_smooth(bool enable = true);
@@ -177,6 +178,8 @@ private:
 
     bool is_custom_viewport;
     GLuint custom_viewport[4];
+
+	std::vector<Surfel> m_geometry;
 };
 
 #endif // SPLATRENDER_HPP
