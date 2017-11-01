@@ -686,7 +686,7 @@ SplatRenderer::end_frame()
 }
 
 void
-SplatRenderer::set_geometry(std::vector<Surfel> &visible_geometry) {
+SplatRenderer::set_geometry(std::vector<Surfel> * visible_geometry) {
 	m_geometry = visible_geometry;
 }
 
@@ -695,7 +695,7 @@ SplatRenderer::render_frame(bool has_data_changed, float r, float g, float b, fl
 {
     begin_frame(r, g, b, a);
 
-    m_num_pts = static_cast<unsigned int>(m_geometry.size());
+    m_num_pts = static_cast<unsigned int>(m_geometry->size());
 
     if (m_num_pts > 0)
     {
@@ -703,7 +703,7 @@ SplatRenderer::render_frame(bool has_data_changed, float r, float g, float b, fl
 			glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 			glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Surfel) * m_num_pts,
-				&m_geometry.front(), GL_DYNAMIC_DRAW);
+				&m_geometry->front(), GL_DYNAMIC_DRAW);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
 
