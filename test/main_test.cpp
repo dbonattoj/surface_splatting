@@ -15,11 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Surface Splatting. If not, see <http://www.gnu.org/licenses/>.
 
-#include "../glviz/include/GLviz"
+#include <GLViz>
 
-#include "../surface_splatting/splat_renderer.hpp"
+#include <splat_renderer.hpp>
 
-#include "../vendors/Eigen/Core"
+//#include "../vendors/Eigen/Core"
+#include "Eigen/Core"
 
 #include <iostream>
 #include <memory>
@@ -49,7 +50,8 @@ void load_triangle_mesh(std::string const& filename);
 void
 displayFunc()
 {
-    GLuint textureID = viz->render_frame(m_surfels);
+    viz->set_geometry(&m_surfels);
+    GLuint textureID = viz->render_frame(true, 0, 0, 0, 0);
 #ifndef NDEBUG
 	std::cout << "Texture ID: " << textureID << std::endl;
 #endif
