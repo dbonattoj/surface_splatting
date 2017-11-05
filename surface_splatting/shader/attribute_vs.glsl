@@ -28,6 +28,7 @@ layout(std140, column_major) uniform Camera
 {
     mat4 modelview_matrix;
     mat4 projection_matrix;
+    vec3 model_offset;
 };
 
 layout(std140, column_major) uniform Raycast
@@ -329,7 +330,8 @@ pointsprite(in vec3 c, in vec3 u, in vec3 v,
 
 void main()
 {
-    vec4 c_eye = modelview_matrix * vec4(c, 1.0);
+    vec4 c_moved = vec4(c, 1.0) - vec4(model_offset[0], model_offset[1], model_offset[2], 0.0);
+    vec4 c_eye = modelview_matrix * c_moved;
     vec3 u_eye = radius_scale * mat3(modelview_matrix) * u;
     vec3 v_eye = radius_scale * mat3(modelview_matrix) * v;
     vec3 n_eye = normalize(cross(u_eye, v_eye));

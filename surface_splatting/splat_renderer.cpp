@@ -449,7 +449,7 @@ void SplatRenderer::set_custom_viewport(int startx, int starty, int width, int h
 
 void SplatRenderer::computerPrincipalDirections(float const * vertex1_ptr, float const * vertex2_ptr, float const * vertex3_ptr, float * ellipsis_center_ptr, float * ellipsis_principal_direction_1_ptr, float * ellipsis_principal_direction_2_ptr)
 {
-	steiner_circumellipse(vertex1_ptr, vertex2_ptr, vertex3_ptr, ellipsis_center_ptr, ellipsis_principal_direction_1_ptr, ellipsis_principal_direction_2_ptr);
+    steiner_circumellipse(vertex1_ptr, vertex2_ptr, vertex3_ptr, ellipsis_center_ptr, ellipsis_principal_direction_1_ptr, ellipsis_principal_direction_2_ptr);
 }
 
 void
@@ -464,11 +464,11 @@ SplatRenderer::setup_uniforms(glProgram& program)
     else {
         glGetIntegerv(GL_VIEWPORT, viewport);
     }
-	static bool first_time = true;
-	if (first_time) {
-		printf("VIEWPORT: %d %d %d %d\n", viewport[0], viewport[1], viewport[2], viewport[3]);
-		first_time = false;
-	}
+    static bool first_time = true;
+    if (first_time) {
+        printf("VIEWPORT: %d %d %d %d\n", viewport[0], viewport[1], viewport[2], viewport[3]);
+        first_time = false;
+    }
     //GLviz::Frustum view_frustum = m_camera.get_frustum();
 
     m_uniform_raycast.set_buffer_data(
@@ -552,66 +552,66 @@ SplatRenderer::render_pass(bool depth_only)
 
 void
 SplatRenderer::steiner_circumellipse(float const* v0_ptr, float const* v1_ptr,
-	float const* v2_ptr, float* p0_ptr, float* t1_ptr, float* t2_ptr)
+    float const* v2_ptr, float* p0_ptr, float* t1_ptr, float* t2_ptr)
 {
-	Matrix2f Q;
-	Vector3f d0, d1, d2;
-	{
-		const Vector3f v0 = Map<const Vector3f>(v0_ptr);
-		const Vector3f v1 = Map<const Vector3f>(v1_ptr);
-		const Vector3f v2 = Map<const Vector3f>(v2_ptr);
+    Matrix2f Q;
+    Vector3f d0, d1, d2;
+    {
+        const Vector3f v0 = Map<const Vector3f>(v0_ptr);
+        const Vector3f v1 = Map<const Vector3f>(v1_ptr);
+        const Vector3f v2 = Map<const Vector3f>(v2_ptr);
 
-		const Vector3f v[3] = { v0, v1, v2 };
+        const Vector3f v[3] = { v0, v1, v2 };
 
-		d0 = v[1] - v[0];
-		d0.normalize();
+        d0 = v[1] - v[0];
+        d0.normalize();
 
-		d1 = v[2] - v[0];
-		d1 = d1 - d0 * d0.dot(d1);
-		d1.normalize();
+        d1 = v[2] - v[0];
+        d1 = d1 - d0 * d0.dot(d1);
+        d1.normalize();
 
-		d2 = (1.0f / 3.0f) * (v[0] + v[1] + v[2]);
+        d2 = (1.0f / 3.0f) * (v[0] + v[1] + v[2]);
 
-		Vector2f p[3];
-		for (unsigned int j(0); j < 3; ++j)
-		{
-			p[j] = Vector2f(
-				d0.dot(v[j] - d2),
-				d1.dot(v[j] - d2)
-			);
-		}
+        Vector2f p[3];
+        for (unsigned int j(0); j < 3; ++j)
+        {
+            p[j] = Vector2f(
+                d0.dot(v[j] - d2),
+                d1.dot(v[j] - d2)
+            );
+        }
 
-		Matrix3f A;
-		for (unsigned int j(0); j < 3; ++j)
-		{
-			A.row(j) = Vector3f(
-				p[j].x() * p[j].x(),
-				2.0f * p[j].x() * p[j].y(),
-				p[j].y() * p[j].y()
-			);
-		}
+        Matrix3f A;
+        for (unsigned int j(0); j < 3; ++j)
+        {
+            A.row(j) = Vector3f(
+                p[j].x() * p[j].x(),
+                2.0f * p[j].x() * p[j].y(),
+                p[j].y() * p[j].y()
+            );
+        }
 
-		FullPivLU<Matrix3f> lu(A);
-		Vector3f res = lu.solve(Vector3f::Ones());
+        FullPivLU<Matrix3f> lu(A);
+        Vector3f res = lu.solve(Vector3f::Ones());
 
-		Q(0, 0) = res(0);
-		Q(1, 1) = res(2);
-		Q(0, 1) = Q(1, 0) = res(1);
-	}
+        Q(0, 0) = res(0);
+        Q(1, 1) = res(2);
+        Q(0, 1) = Q(1, 0) = res(1);
+    }
 
-	Map<Vector3f> p0(p0_ptr), t1(t1_ptr), t2(t2_ptr);
-	{
-		SelfAdjointEigenSolver<Matrix2f> es;
-		es.compute(Q);
+    Map<Vector3f> p0(p0_ptr), t1(t1_ptr), t2(t2_ptr);
+    {
+        SelfAdjointEigenSolver<Matrix2f> es;
+        es.compute(Q);
 
-		Vector2f const& l = es.eigenvalues();
-		Vector2f const& e0 = es.eigenvectors().col(0);
-		Vector2f const& e1 = es.eigenvectors().col(1);
+        Vector2f const& l = es.eigenvalues();
+        Vector2f const& e0 = es.eigenvectors().col(0);
+        Vector2f const& e1 = es.eigenvectors().col(1);
 
-		p0 = d2;
-		t1 = (1.0f / std::sqrt(l.x())) * (d0 * e0.x() + d1 * e0.y());
-		t2 = (1.0f / std::sqrt(l.y())) * (d0 * e1.x() + d1 * e1.y());
-	}
+        p0 = d2;
+        t1 = (1.0f / std::sqrt(l.x())) * (d0 * e0.x() + d1 * e0.y());
+        t2 = (1.0f / std::sqrt(l.y())) * (d0 * e1.x() + d1 * e1.y());
+    }
 }
 
 void
@@ -687,59 +687,61 @@ SplatRenderer::end_frame()
 
 void
 SplatRenderer::set_geometry(std::vector<Surfel> * visible_geometry) {
-	m_geometry = visible_geometry;
+    m_geometry = visible_geometry;
 }
 
 GLuint
 SplatRenderer::render_frame(bool has_data_changed, float r, float g, float b, float a)
 {
-    begin_frame(r, g, b, a);
+    if (m_geometry) {
+        begin_frame(r, g, b, a);
 
-    m_num_pts = static_cast<unsigned int>(m_geometry->size());
+        m_num_pts = static_cast<unsigned int>(m_geometry->size());
 
-    if (m_num_pts > 0)
-    {
-		if (has_data_changed) {
-			glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-			glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Surfel) * m_num_pts,
-				&m_geometry->front(), GL_DYNAMIC_DRAW);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-		}
-
-        if (m_multisample)
+        if (m_num_pts > 0)
         {
-            glEnable(GL_MULTISAMPLE);
-            glEnable(GL_SAMPLE_SHADING);
-            glMinSampleShading(4.0);
+            if (has_data_changed) {
+                glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+                glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(Surfel) * m_num_pts,
+                    &m_geometry->front(), GL_DYNAMIC_DRAW);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+            }
+
+            if (m_multisample)
+            {
+                glEnable(GL_MULTISAMPLE);
+                glEnable(GL_SAMPLE_SHADING);
+                glMinSampleShading(4.0);
+            }
+
+            if (m_soft_zbuffer)
+            {
+                render_pass(true);
+            }
+
+            render_pass(false);
+
+            if (m_multisample)
+            {
+                glDisable(GL_MULTISAMPLE);
+                glDisable(GL_SAMPLE_SHADING);
+            }
         }
 
-        if (m_soft_zbuffer)
-        {
-            render_pass(true);
-        }
-
-        render_pass(false);
-
-        if (m_multisample)
-        {
-            glDisable(GL_MULTISAMPLE);
-            glDisable(GL_SAMPLE_SHADING);
-        }
-    }
-
-    end_frame();
+        end_frame();
 
 #ifndef NDEBUG
-    GLenum gl_error = glGetError();
-    if (GL_NO_ERROR != gl_error)
-    {
-        std::cerr << __FILE__ << "(" << __LINE__ << "): "
-            << GLviz::get_gl_error_string(gl_error) << std::endl;
-    }
+        GLenum gl_error = glGetError();
+        if (GL_NO_ERROR != gl_error)
+        {
+            std::cerr << __FILE__ << "(" << __LINE__ << "): "
+                << GLviz::get_gl_error_string(gl_error) << std::endl;
+        }
 #endif
+    }
 
-	return m_fbo.get_fbo();
+    return m_fbo.get_fbo();
 }
 
 void CrudeCamera::set_Model(const Eigen::Matrix4f & model)

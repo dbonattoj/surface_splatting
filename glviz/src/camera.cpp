@@ -48,6 +48,11 @@ namespace GLviz
         return m_projection_matrix;
     }
 
+    Eigen::Vector3f const & Camera::get_position_offset() const
+    {
+        return m_position_offset;
+    }
+
     void Camera::set_model_matrix(Eigen::Matrix4f const & model)
     {
         m_model_matrix = model;
@@ -63,6 +68,10 @@ namespace GLviz
         m_projection_matrix = projection;
     }
 
+    void Camera::set_position_offset(Eigen::Vector3f const & position)
+    {
+        m_position_offset = position;
+    }
 
 
 Scene_Camera::Scene_Camera()

@@ -26,6 +26,7 @@ layout(std140, column_major) uniform Camera
 {
     mat4 modelview_matrix;
     mat4 projection_matrix;
+    vec3 model_offset;
 };
 
 layout(std140) uniform Sphere

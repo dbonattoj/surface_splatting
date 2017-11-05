@@ -60,16 +60,19 @@ public:
     Eigen::Matrix4f const& get_model_matrix() const;
     Eigen::Matrix4f const& get_view_matrix() const;
     Eigen::Matrix4f const& get_projection_matrix() const;
+    Eigen::Vector3f const& get_position_offset() const;
 
     void set_model_matrix(Eigen::Matrix4f const& model);
     void set_view_matrix(Eigen::Matrix4f const& view);
     void set_projection_matrix(Eigen::Matrix4f const& projection);
+    void set_position_offset(Eigen::Vector3f const& position);
 
 
 protected:
     Eigen::Matrix4f m_model_matrix;
     Eigen::Matrix4f m_view_matrix;
     Eigen::Matrix4f m_projection_matrix;
+    Eigen::Vector3f m_position_offset;
 };
 
 class Scene_Camera : public Camera
