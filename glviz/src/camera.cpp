@@ -28,7 +28,13 @@ using namespace Eigen;
 
 namespace GLviz
 {
-
+    Camera::Camera()
+        : m_model_matrix(Eigen::Matrix4f::Identity()),
+        m_view_matrix(Eigen::Matrix4f::Identity()),
+        m_projection_matrix(Eigen::Matrix4f::Identity()),
+        m_position_offset(Eigen::Vector3f::Zero())
+    {
+    }
     Matrix4f const&
         Camera::get_model_matrix() const
     {

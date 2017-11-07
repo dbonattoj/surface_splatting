@@ -57,6 +57,8 @@ struct Plane {
 
 class Camera {
 public:
+    Camera();
+
     Eigen::Matrix4f const& get_model_matrix() const;
     Eigen::Matrix4f const& get_view_matrix() const;
     Eigen::Matrix4f const& get_projection_matrix() const;
